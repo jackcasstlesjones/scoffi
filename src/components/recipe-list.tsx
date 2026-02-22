@@ -86,7 +86,7 @@ export function RecipeList({ initialRecipes }: RecipeListProps) {
             {recipes.map((recipe) => (
               <Link key={recipe._id} href={`/recipes/${recipe._id}`}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
-                  <CardContent className="pt-6">
+                  <CardContent>
                     <h3 className="font-medium text-lg">{recipe.name}</h3>
                     <p className="text-sm text-muted-foreground mt-1"></p>
                     {recipe.ingredients.length > 0 && (
