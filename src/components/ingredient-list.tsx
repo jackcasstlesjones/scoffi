@@ -62,7 +62,11 @@ export function IngredientList({ ingredients, recipeName, onReorder, onDelete, o
   };
 
   const copyToClipboard = async () => {
-    const text = `${recipeName}: ${ingredients.join(', ')}`;
+    const capitalizedName = recipeName
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    const text = `${capitalizedName}: ${ingredients.join(', ')}`;
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
