@@ -156,6 +156,7 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
 
             <IngredientList
               ingredients={ingredients}
+              recipeName={name}
               onReorder={handleReorder}
               onDelete={handleDeleteIngredient}
               onUpdate={handleUpdateIngredient}

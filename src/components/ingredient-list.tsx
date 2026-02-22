@@ -8,13 +8,14 @@ import { Input } from '@/components/ui/input';
 
 interface IngredientListProps {
   ingredients: string[];
+  recipeName: string;
   onReorder: (newOrder: string[]) => void;
   onDelete: (index: number) => void;
   onUpdate?: (index: number, value: string) => void;
   disabled?: boolean;
 }
 
-export function IngredientList({ ingredients, onReorder, onDelete, onUpdate, disabled }: IngredientListProps) {
+export function IngredientList({ ingredients, recipeName, onReorder, onDelete, onUpdate, disabled }: IngredientListProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const [copied, setCopied] = useState(false);
@@ -61,7 +62,7 @@ export function IngredientList({ ingredients, onReorder, onDelete, onUpdate, dis
   };
 
   const copyToClipboard = async () => {
-    const text = ingredients.join('\n');
+    const text = `${recipeName}: ${ingredients.join(', ')}`;
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
