@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateRecipe, deleteRecipe } from '@/lib/actions';
+import { deleteRecipe } from '@/lib/actions';
 import { IngredientList } from '@/components/ingredient-list';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Trash2, Save, Plus } from 'lucide-react';
+import { ArrowLeft, Trash2, Plus, Loader2, Check } from 'lucide-react';
 import Link from 'next/link';
 import type { Recipe } from '@/types/recipe';
 import {
@@ -30,8 +30,48 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
   const [ingredients, setIngredients] = useState<string[]>(recipe.ingredients);
   const [newIngredient, setNewIngredient] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Debounced save function
+  const saveChanges = useCallback(async () => {
+    if (!name.trim()) {
+      return;
+    }
+
+    setIsSaving(true);
+    setShowSaved(false);
+    try {
+      const formData = new FormData();
+      formData.append('id', recipe._id);
+      formData.append('name', name);
+      formData.append('ingredients', JSON.stringify(ingredients));
+
+      await fetch('/api/recipes/update', {
+        method: 'POST',
+        body: formData,
+      });
+
+      setIsSaving(false);
+      setShowSaved(true);
+      setTimeout(() => setShowSaved(false), 2000);
+      router.refresh();
+    } catch {
+      setIsSaving(false);
+    }
+  }, [recipe._id, name, ingredients, router]);
+
+  // Auto-save when name or ingredients change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (name !== recipe.name || JSON.stringify(ingredients) !== JSON.stringify(recipe.ingredients)) {
+        saveChanges();
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [name, ingredients, recipe.name, recipe.ingredients, saveChanges]);
 
   const handleAddIngredient = () => {
     const trimmed = newIngredient.trim();
@@ -49,27 +89,10 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
     setIngredients(ingredients.filter((_, i) => i !== index));
   };
 
-  const handleSave = async () => {
-    if (!name.trim()) {
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const formData = new FormData();
-      formData.append('id', recipe._id);
-      formData.append('name', name);
-      formData.append('ingredients', JSON.stringify(ingredients));
-
-      await fetch('/api/recipes/update', {
-        method: 'POST',
-        body: formData,
-      });
-
-      router.refresh();
-    } finally {
-      setIsSaving(false);
-    }
+  const handleUpdateIngredient = (index: number, value: string) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index] = value;
+    setIngredients(newIngredients);
   };
 
   const handleDelete = async () => {
@@ -83,8 +106,6 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
     }
   };
 
-  const hasChanges = name !== recipe.name || JSON.stringify(ingredients) !== JSON.stringify(recipe.ingredients);
-
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
@@ -95,12 +116,20 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
               Back to Recipes
             </Button>
           </Link>
-          {hasChanges && (
-            <Button onClick={handleSave} disabled={isSaving || !name.trim()}>
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </Button>
-          )}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {isSaving && (
+              <span className="flex items-center gap-1">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Saving...
+              </span>
+            )}
+            {showSaved && (
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                <Check className="h-4 w-4" />
+                Saved
+              </span>
+            )}
+          </div>
         </div>
       </header>
 
@@ -129,13 +158,14 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
               ingredients={ingredients}
               onReorder={handleReorder}
               onDelete={handleDeleteIngredient}
+              onUpdate={handleUpdateIngredient}
             />
 
             <div className="flex gap-2">
               <Input
                 value={newIngredient}
                 onChange={(e) => setNewIngredient(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddIngredient()}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddIngredient()}
                 placeholder="Add an ingredient..."
               />
               <Button
