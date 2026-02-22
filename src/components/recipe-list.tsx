@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Shuffle } from 'lucide-react';
+import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Shuffle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { CreateRecipeForm } from '@/components/create-recipe-form';
-import type { Recipe } from '@/types/recipe';
+} from "@/components/ui/dialog";
+import { CreateRecipeForm } from "@/components/create-recipe-form";
+import type { Recipe } from "@/types/recipe";
 
 interface RecipeListProps {
   initialRecipes: Recipe[];
@@ -88,9 +88,13 @@ export function RecipeList({ initialRecipes }: RecipeListProps) {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="pt-6">
                     <h3 className="font-medium text-lg">{recipe.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {recipe.ingredients.length} ingredient{recipe.ingredients.length !== 1 ? 's' : ''}
-                    </p>
+                    <p className="text-sm text-muted-foreground mt-1"></p>
+                    {recipe.ingredients.length > 0 && (
+                      <>
+                        {recipe.ingredients.length} ingredient
+                        {recipe.ingredients.length !== 1 ? "s" : ""}
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </Link>
