@@ -9,7 +9,7 @@ import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 import { useEffect } from 'react';
 
-const initialState = { success: false, error: null, recipeId: null };
+const initialState = { success: false, error: '', recipeId: null };
 
 function SubmitButton() {
   const { pending } = useFormStatus();

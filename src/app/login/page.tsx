@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 
-const initialState = { success: false, error: null };
+const initialState = { success: false, error: '' };
 
 function SubmitButton() {
   const { pending } = useFormStatus();

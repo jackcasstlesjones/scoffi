@@ -7,7 +7,12 @@ import type { Recipe, CreateRecipeInput, UpdateRecipeInput } from '@/types/recip
 
 // Auth Actions
 
-export async function login(prevState: any, formData: FormData) {
+interface LoginState {
+  success: boolean;
+  error: string;
+}
+
+export async function login(prevState: LoginState, formData: FormData): Promise<LoginState> {
   const username = formData.get('username') as string;
   const password = formData.get('password') as string;
 
@@ -68,11 +73,13 @@ export async function getRecipe(id: string): Promise<Recipe | null> {
   };
 }
 
-export async function createRecipe(prevState: any, formData: FormData): Promise<{
+interface CreateRecipeState {
   success: boolean;
-  error: string | null;
+  error: string;
   recipeId: string | null;
-}> {
+}
+
+export async function createRecipe(prevState: CreateRecipeState, formData: FormData): Promise<CreateRecipeState> {
   const isAuthenticated = await getSession();
   if (!isAuthenticated) {
     redirect('/login');
@@ -93,7 +100,7 @@ export async function createRecipe(prevState: any, formData: FormData): Promise<
 
     return {
       success: true,
-      error: null,
+      error: '',
       recipeId: recipe._id.toString(),
     };
   } catch (error) {
