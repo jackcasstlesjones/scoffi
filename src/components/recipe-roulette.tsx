@@ -37,7 +37,7 @@ export function RecipeRoulette({ recipes }: RecipeRouletteProps) {
     const targetIndex = Math.floor(Math.random() * recipes.length);
     // Jump ahead by a random amount, then scroll through ~8-12 visible steps
     const skipAmount = 1 + Math.floor(Math.random() * 50);
-    const visibleSteps = 8 + Math.floor(Math.random() * 5);
+    const visibleSteps = 12 + Math.floor(Math.random() * 5);
     const totalSteps = visibleSteps;
 
     // Start index: skip ahead from current, then count back visibleSteps to land on target
@@ -49,7 +49,8 @@ export function RecipeRoulette({ recipes }: RecipeRouletteProps) {
 
     for (let step = 0; step < totalSteps; step++) {
       const progress = step / totalSteps;
-      const delay = 120 + 250 * Math.pow(progress, 2);
+      // Start very fast (30ms), ramp up steeply
+      const delay = 30 + 400 * Math.pow(progress, 2);
       cumulativeDelay += delay;
 
       const recipeIndex = (startIndex + step) % recipes.length;
