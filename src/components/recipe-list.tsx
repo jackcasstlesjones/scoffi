@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Shuffle } from "lucide-react";
+import { Dices, Plus, Shuffle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -47,13 +47,20 @@ export function RecipeList({ initialRecipes }: RecipeListProps) {
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">My Recipes</h2>
           <div className="flex gap-2">
             {recipes.length > 1 && (
-              <Button variant="outline" onClick={handleShuffle}>
-                <Shuffle className="h-4 w-4 mr-2" />
-                Shuffle
-              </Button>
+              <>
+                <Link href="/roulette">
+                  <Button variant="outline">
+                    <Dices className="h-4 w-4 mr-2" />
+                    Roulette
+                  </Button>
+                </Link>
+                <Button variant="outline" onClick={handleShuffle}>
+                  <Shuffle className="h-4 w-4 mr-2" />
+                  Shuffle
+                </Button>
+              </>
             )}
             <Dialog>
               <DialogTrigger asChild>
